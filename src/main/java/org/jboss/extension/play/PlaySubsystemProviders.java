@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.playframework.extension;
+package org.jboss.extension.play;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.HEAD_COMMENT_ALLOWED;
@@ -33,6 +33,8 @@ import org.jboss.as.controller.descriptions.DescriptionProvider;
 import org.jboss.dmr.ModelNode;
 
 /**
+ * {@code DescriptionProvider}s for the Play! subsystem.
+ *
  * @author Emanuel Muckenhuber
  */
 class PlaySubsystemProviders {

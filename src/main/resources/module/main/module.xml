@@ -1,6 +1,6 @@
-<module xmlns="urn:jboss:module:1.0" name="subsystem">
+<module xmlns="urn:jboss:module:1.0" name="org.jboss.extension.play">
     <resources>
-        <resource-root path="jboss-playframework-extension.jar"/>
+        <resource-root path="play-extension.jar"/>
     </resources>
     
     <dependencies>
@@ -12,5 +12,6 @@
         <module name="org.jboss.msc"/>
         <module name="org.jboss.logging"/>
         <module name="org.jboss.vfs"/>
+        <module name="org.jboss.as.web"/>
     </dependencies>
 </module>

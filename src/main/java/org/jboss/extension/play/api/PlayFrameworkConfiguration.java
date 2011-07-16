@@ -20,34 +20,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.playframework.deployment;
+package org.jboss.extension.play.api;
 
-import java.util.Properties;
-
-import org.jboss.as.server.deployment.AttachmentKey;
-import org.jboss.vfs.VirtualFile;
+import java.io.File;
 
 /**
+ * The global Play! configuration, shared across all deployed Play! applications.
+ *
  * @author Emanuel Muckenhuber
  */
-public final class PlayApplication {
+public interface PlayFrameworkConfiguration {
 
-    static final AttachmentKey<PlayApplication> KEY = AttachmentKey.create(PlayApplication.class);
+    /**
+     * Get the play root.
+     *
+     * @return the play root
+     */
+    File getRoot();
 
-    private final VirtualFile root;
-    private final Properties configuration;
+    /**
+     * Get the framework root.
+     *
+     * @return the framework root
+     */
+    File getFrameworkRoot();
 
-    PlayApplication(final VirtualFile root, final Properties configuration) {
-        this.root = root;
-        this.configuration = configuration;
-    }
-
-    public VirtualFile getApplicationRoot() {
-        return root;
-    }
-
-    public Properties getConfiguration() {
-        return this.configuration;
-    }
+    /**
+     * Get the lib directory.
+     *
+     * @return
+     */
+    File getFrameworkLib();
 
 }

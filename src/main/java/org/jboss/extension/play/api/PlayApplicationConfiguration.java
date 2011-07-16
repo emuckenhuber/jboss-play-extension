@@ -20,42 +20,55 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.playframework.extension;
+package org.jboss.extension.play.api;
 
-import org.jboss.msc.service.Service;
-import org.jboss.msc.service.StartContext;
-import org.jboss.msc.service.StartException;
-import org.jboss.msc.service.StopContext;
+import java.io.File;
+import java.util.Properties;
 
-import play.Play;
+import org.infinispan.Cache;
+
+import play.cache.CacheImpl;
 
 /**
+ * Application specific configuration
+ *
  * @author Emanuel Muckenhuber
  */
-class PlayService implements Service<Play> {
+public interface PlayApplicationConfiguration {
 
-    final Play play = new Play();
+    /**
+     * Get the application name.
+     *
+     * @return the application name
+     */
+    String getName();
 
-    @Override
-    public synchronized void start(final StartContext context) throws StartException {
-        Play.standalonePlayServer = false;
-        Play.forceProd = true;
-        try {
-            Play.start();
-        } catch (Exception e) {
-            throw new StartException("failed to start play framework", e);
-        }
-    }
+    /**
+     * Get the application root.
+     *
+     * @return the application root
+     */
+    File getApplicationRoot();
 
-    @Override
-    public synchronized void stop(final StopContext context) {
-        Play.stop();
-    }
+    /**
+     * Get the context root.
+     *
+     * @return the conext root
+     */
+    String getContextRoot();
 
-    @Override
-    public synchronized Play getValue() throws IllegalStateException, IllegalArgumentException {
-        final Play play = this.play;
-        return play;
-    }
+    /**
+     * Get the configuration properties.
+     *
+     * @return the configuration properties
+     */
+    Properties getConfigurationProperties();
+
+    /**
+     * Get the cache.
+     *
+     * @return the cache, {@code null} if not configured.
+     */
+    Cache<String, Object> getCache();
 
 }

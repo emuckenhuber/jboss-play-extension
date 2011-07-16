@@ -20,54 +20,45 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.playframework.deployment;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+package org.jboss.extension.play.deployment;
 
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
-import org.jboss.vfs.VirtualFile;
+import org.jboss.as.server.deployment.module.ModuleDependency;
+import org.jboss.as.server.deployment.module.ModuleSpecification;
+import org.jboss.modules.Module;
+import org.jboss.modules.ModuleIdentifier;
+import org.jboss.modules.ModuleLoader;
 
 /**
+ * Deployment processor setting up the module dependencies require for a play! application.
+ *
  * @author Emanuel Muckenhuber
  */
-public class PlayDeploymentProcessor implements DeploymentUnitProcessor {
+public class PlayClassloadingDependenciesProcessor implements DeploymentUnitProcessor {
+
+    private static final ModuleIdentifier JAVAX_API = ModuleIdentifier.create("javax.api");
+    private static final ModuleIdentifier PLAY_EXTENSION = ModuleIdentifier.create("org.jboss.extension.play");
 
     @Override
     public void deploy(final DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
         final DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
-        final VirtualFile deploymentRoot = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT).getRoot();
-        if(deploymentRoot.getChild("app").exists() && deploymentRoot.getChild("conf/application.conf").exists()) {
-            final VirtualFile appConf = deploymentRoot.getChild("conf/application.conf");
-            try {
-                final Properties configuration = new Properties();
-                final InputStream is = appConf.openStream();
-                try {
-                    configuration.load(is);
-                } finally {
-                    if(is != null) {
-                        try {
-                            is.close();
-                        } catch(IOException e) {
-                            // ignore
-                        }
-                    }
-                }
-                final PlayApplication app = new PlayApplication(deploymentRoot, configuration);
-                phaseContext.putAttachment(PlayApplication.KEY, app);
-            } catch(IOException e) {
-                throw new DeploymentUnitProcessingException("failed to process application.conf", e);
-            }
+        final PlayApplication application = deploymentUnit.getAttachment(PlayApplication.APPLICATION_KEY);
+        if(application == null) {
+            return;
         }
+        final ModuleSpecification moduleSpecification = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
+        final ModuleLoader moduleLoader = Module.getBootModuleLoader();
+
+        moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, JAVAX_API, false, false, false));
+        moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, PLAY_EXTENSION, false, false, true));
     }
 
     @Override
-    public void undeploy(DeploymentUnit context) {
+    public void undeploy(final DeploymentUnit context) {
         //
     }
 
